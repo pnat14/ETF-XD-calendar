@@ -30,6 +30,6 @@ def fetch_events():
 
 if __name__ == "__main__":
     events = fetch_events()
-    with open("xd_calendar.ics", "w") as f:
-        f.write(ics_content)
+    with open("public/xd_calendar.ics", "w") as f:
+    f.write(ics_content)
     print("✅ ICS calendar generated: xd_calendar.ics")
