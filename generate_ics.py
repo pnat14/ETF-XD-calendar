@@ -1,35 +1,37 @@
-import yfinance as yf
-from datetime import datetime
+import os
 
-tickers = ["QQQI", "SPYI", "JEPQ", "MSTY"]
+ics_content = """BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ETF XD Calendar//EN
+BEGIN:VEVENT
+SUMMARY:QQQI XD Date
+DTSTART;VALUE=DATE:20250910
+DESCRIPTION:Estimated ex-dividend date for QQQI
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:SPYI XD Date
+DTSTART;VALUE=DATE:20250912
+DESCRIPTION:Estimated ex-dividend date for SPYI
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:JEPQ XD Date
+DTSTART;VALUE=DATE:20250914
+DESCRIPTION:Estimated ex-dividend date for JEPQ
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:MSTY XD Date
+DTSTART;VALUE=DATE:20250916
+DESCRIPTION:Estimated ex-dividend date for MSTY
+END:VEVENT
+END:VCALENDAR
+"""
 
-def create_ics(events):
-    ics = "BEGIN:VCALENDAR\nVERSION:2.0\nCALSCALE:GREGORIAN\n"
-    for ev in events:
-        ics += "BEGIN:VEVENT\n"
-        ics += f"SUMMARY:{ev['title']}\n"
-        ics += f"DTSTART;VALUE=DATE:{ev['date']}\n"
-        ics += f"DTEND;VALUE=DATE:{ev['date']}\n"
-        ics += "BEGIN:VALARM\nTRIGGER:-P1D\nACTION:DISPLAY\nDESCRIPTION:Dividend Alert\nEND:VALARM\n"
-        ics += "END:VEVENT\n"
-    ics += "END:VCALENDAR\n"
-    return ics
+# ✅ สร้างโฟลเดอร์ public ถ้ายังไม่มี
+os.makedirs("public", exist_ok=True)
 
-def fetch_events():
-    events = []
-    for t in tickers:
-        data = yf.Ticker(t).dividends
-        if not data.empty:
-            last_date = data.index[-1].date()
-            date_str = last_date.strftime("%Y%m%d")
-            events.append({
-                "title": f"{t} Ex-Dividend Date",
-                "date": date_str
-            })
-    return events
+# ✅ สร้างไฟล์ .ics ข้างใน public
+with open("public/xd_calendar.ics", "w") as f:
+    f.write(ics_content)
 
-if __name__ == "__main__":
-    events = fetch_events()
-    with open("public/xd_calendar.ics", "w") as f:
-        f.write(ics_content)
-    print("✅ ICS calendar generated: xd_calendar.ics")
+print("ICS file generated at public/xd_calendar.ics")
+
